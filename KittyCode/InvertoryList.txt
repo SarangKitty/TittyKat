@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="../common/standardTemplate.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+    
+<ui:define name="title">
+	<title><h:outputText value="${messages.lbInventory}"/></title>
+</ui:define>
+
+<ui:define name="menubar">
+	<ui:include src="menubarInventoryNE.xhtml">
+	        <ui:param name="helpfile" value="${messages.mHelpfile02}" />
+			<ui:param name="helplink" value="InventoryScan" />
+	</ui:include>
+</ui:define>
+
+<ui:define name="content">
+<link rel="stylesheet" href="../common/eds-style.css" type="text/css" media="all" />
+
+<link rel="stylesheet" href="../common/common.css" type="text/css" media="all" />
+
+<h:form id="INVENTORY_LIST" prependId="false">
+	<p:messages id="msg" closable="true" globalOnly="true">
+		<p:autoUpdate />
+	</p:messages>
+	
+	<div style="padding:5px 0px; border-bottom: 1px solid #a8a8a8;
+margin-bottom: 12px;"><span class = "ericssonHeadings2" > ${messages.lbInventory} </span></div>	
+
+<!-- 
+	<table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0">
+		<tbody>
+	 	<tr>
+	   		<td><span class = "ericssonHeadings2" > ${messages.lbInventory} </span></td>
+	 	</tr>
+		</tbody>
+	</table>
+	
+	<p></p>
+	 -->
+	<p:panelGrid columns="2">
+		<p:commandButton id="btnStartScan" value="${messages.lbStartScan}"
+			title="${messages.mStartScan}"
+			action="${inventoryController.initInventoryScan()}" ajax="false"
+			update="dataTable">
+		</p:commandButton>
+		
+<!-- 		<p:commandButton id="btnLoad" value="${messages.lbLoad}"
+			title="${messages.lbLoad}" ajax="true"
+			action="${inventoryController.refreshPage()}"
+			update="dataTable">
+		</p:commandButton>  -->
+	</p:panelGrid>
+		
+	<p></p>
+	
+	<!-- <p:contextMenu for="dataTable">
+		<p:menuitem value="${messages.lbUpdateSchedulerInfo}" action="${inventoryController.updateSchedulerInfoForNe()}" target="_self" ajax="false" icon="ui-icon-arrowthick-2-n"/>
+		<p:separator/>
+		<p:menuitem value="${messages.lbUpdNe}" action="${inventoryController.loadUpdateNeEntryPage()}" ajax="false" icon="ui-icon-circle-check" />
+		
+	</p:contextMenu> -->
+	    <div class="card-2">
+	<p:dataTable id="dataTable" emptyMessage="${messages.noRecordFound}" var="item" value="${inventoryController.neInventoryList}" 
+		paginator="true" 
+		paginatorAlwaysVisible="true" 
+		multiViewState="true"
+		rows="${tableUtils.rowsPerPage}" 
+		rowsPerPageTemplate="${tableUtils.rowsPerPageTemplate}"
+		paginatorTemplate="${tableUtils.paginatorTemplate} {Exporters}" 
+		currentPageReportTemplate="${tableUtils.currentPageReportTemplate}"
+		selection="${inventoryController.selectedNeInventoryList}" rowKey="#{item.neCompositeKey}"
+		reflow="true" sortMode="multiple" resizableColumns="true">
+				
+			<p:ajax event="rowSelectCheckbox"   listener="#{inventoryController.onRowSelectCheckBox}"  />
+			<p:ajax event="rowUnselectCheckbox" listener="#{inventoryController.onRowUnSelectCheckBox}" />
+			<p:ajax event="rowSelect"   listener="#{inventoryController.onRowSelect}"  />
+			<p:ajax event="rowUnselect" listener="#{inventoryController.onRowUnSelect}" />
+			<p:ajax event="toggleSelect" listener="#{inventoryController.onToggleSelect}"  />
+			
+			<f:facet name="{Exporters}" >
+                 <h:panelGroup styleClass="btn-icons">
+  						 <h:commandLink  id="refreshBtnId"  ajax="false" 
+					action="${inventoryController.refreshPage()}"
+					onclick="PF('block_page').show();">
+	                                  <p:graphicImage name="refresh.png" 
+	                                                  library="icons" 
+	                                                  title="${messages.lbRefresh}" 
+	                                                  width="18" />	                                                  
+	                                </h:commandLink>
+                 </h:panelGroup>          
+             </f:facet>	
+	
+			<p:column selectionMode="multiple" style="text-align:center;"/>		
+    					
+			<p:column id="colInventType" headerText="${messages.lbInventType}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;" field="${messages.lbInventType}" filterBy="${item.type}" filterMatchMode="contains" sortBy="#{item.type}" resizable="true" >
+				<h:outputText value="#{item.type}" />
+			</p:column>
+						
+			<p:column id="colInventNeIp" headerText="${messages.lbInventNeIp}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;" field="${messages.lbInventNeIp}" filterBy="${item.neIpAddress}" filterMatchMode="contains" sortBy="#{item.neIpAddress}" resizable="true" >
+				<h:outputText value="#{item.neIpAddress}" />
+			</p:column>
+			
+			<p:column id="colInventNeName" headerText="${messages.lbInventNeName}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;" field="${messages.lbInventNeName}" filterBy="${item.neName}" filterMatchMode="contains" sortBy="#{item.neName}" resizable="true" >
+				<h:outputText value="#{item.neName}"/>
+			</p:column>
+			
+			<p:column id="colInventNeLoc" headerText="${messages.lbInventNeLocation}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;" field="${messages.lbInventNeLocation}" filterBy="${item.neLocation}" filterMatchMode="contains" sortBy="#{item.neLocation}" resizable="true" >
+				<h:outputText value="#{item.neLocation}"/>
+			</p:column>			
+									
+			<!-- <p:column headerText="${messages.lbInventModule}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;width:15%" filterBy="${item.moduleName}" filterMatchMode="contains" sortBy="#{item.moduleName}" resizable="true" >
+				<h:outputText value="#{item.moduleName}" />
+			</p:column>
+			
+			<p:column headerText="${messages.lbInventProdNum}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;width:10%" resizable="true">
+				<h:outputText value="#{item.prodNumber}" />
+			</p:column>
+			
+			<p:column headerText="${messages.lbInventRel}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;width:3%" resizable="true">
+				<h:outputText value="#{item.release}" />
+			</p:column>
+			
+			<p:column headerText="${messages.lbInventItemNo}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;width:15%" resizable="true">
+				<h:outputText value="#{item.itemNo}" />
+			</p:column>
+			
+			<p:column headerText="${messages.lbInventManufNo}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;width:15%" resizable="true">
+				<h:outputText value="#{item.manufactNo}" />
+			</p:column>
+			
+			<p:column headerText="${messages.lbInventStatus}"
+				style="text-align: center;white-space:normal; word-wrap:break-word;width:3%" resizable="true">
+				<h:outputText value="#{item.status}" />
+			</p:column>
+			
+			<p:column headerText="${messages.lbInventRev}"
+				style="text-align: center;white-space:normal; word-wrap:break-word;width:5%" resizable="true">
+				<h:outputText value="#{item.revNo}" />
+			</p:column> -->
+			
+			<p:column style="text-align: center;white-space:normal; word-wrap:break-word;"
+		          headerText="${messages.lbCurrentInvent}" resizable="true" exportable="false" field="${messages.lbCurrentInvent}">
+				<h:panelGroup>
+					<h:commandLink action="${inventoryController.showInventoryResult(item.type,item.neIpAddress,item.neLocation)}" target="_blank">
+			           	<h:graphicImage 
+							name="inventory.png" 
+							library="icons" title="${messages.mInvResBut}"
+							alt=""  
+							height="22" width="25" />					
+					</h:commandLink>	
+				</h:panelGroup>			
+			</p:column>	
+			
+			<p:column style="text-align: center;white-space:normal; word-wrap:break-word;"
+		          headerText="${messages.lbInventoryInfoHistory}" resizable="true" exportable="false" field="${messages.lbInventoryInfoHistory}">
+				<h:panelGroup>
+					<h:commandLink action="${inventoryHistoryController.showInventoryHistory(item.type,item.neIpAddress)}" target="_blank">
+			           	<h:graphicImage 
+							name="inventory.png" 
+							library="icons" title="${messages.mInvHisBut}"
+							alt=""  
+							height="22" width="25" />					
+					</h:commandLink>	
+				</h:panelGroup>			
+			</p:column>		
+								
+			<!-- <p:column headerText="${messages.lbUpdTime}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;width:10%" sortBy="#{item.updTime}" resizable="true" >
+				<h:outputText value="#{item.updTime}" />
+			</p:column> -->
+			
+			<p:column headerText="${messages.lbUpdTime}"
+				style="text-align: left;white-space:normal; word-wrap:break-word;width:10%" resizable="true" field="${messages.lbUpdTime}" sortBy="#{item.updTime}">
+				<h:outputText value="#{item.updTime}" />
+			</p:column>
+			
+			
+			<!-- <p:column style="text-align: center;white-space:normal; word-wrap:break-word;width:5%" headerText="${messages.lbInventoryLog}" resizable="true" >
+					<h:graphicImage 
+						name="${item.status=='online' ? 'ok.png' : item.status=='offline' ? 'notok.png' : item.status=='empty' ? 'empty.png' : item.status=='wip' ? 'wip.png' : 'send.png'}" 
+						library="icons" title="${messages.ttConfigCheck}"
+						alt="${item.status}" 
+						height="22" width="25" />
+						
+						<p:spacer width = "15px" height="22"/>						
+						
+						<h:commandLink action="${inventoryController.showLogbookResult(messages.hInventoryScan,item.type)}" target="_blank">
+			           	<h:graphicImage 
+							name="logbook.png" 
+							library="icons" title="Logbook display"
+							alt=""  
+							height="22" width="25" />					
+						</h:commandLink>
+				</p:column> -->
+		</p:dataTable>
+	
+</div>
+
+<!-- @ekasaak -->
+<!--  add an update button to open a dialog box that takes new location and updates the location  -->  
+         
+<p:contextMenu for="dataTable">
+
+    <p:menuitem value="${messages.lbUpdateInventNeName}" icon="fa fa-edit" update=":updateInventoryNameForm" oncomplete="PF('updateNameDialog').show()"/>
+    <p:menuitem value="${messages.lbUpdateInventNeLocation}" icon="fa fa-edit" update=":updateInventoryLocationForm" oncomplete="PF('updateLocationDialog').show()"/>
+
+</p:contextMenu>
+
+<!-- Dialog box for NE name goes  here -->
+
+<p:dialog id="updateNameDialog" header="${messages.mRenameInvent}" widgetVar="updateNameDialog" width="800" height="220" 
+modal="true" resizable="false">
+  		<h:form id="updateInventoryNameForm">
+  		
+  		<h:panelGrid  columns="3" style="width: 100%">
+  		
+  		  <h:outputText style="font-weight:bold" value="${messages.mCurrentInventoryName}" />
+  		  <h:outputText style="font-weight:bold" value=" :  " />	    
+  		  <h:outputText style="font-weight:bold" value="${inventoryController.selectedNeInventoryList1.neName}" />
+  		 
+  		<h:outputText style="font-weight:bold" value="${messages.mNewInventoryName}" />
+     	<h:outputText style="font-weight:bold" value=" :  " />    
+     	
+     	<p:inputText id="newInventName" style="font-weight:bold" value="#{inventoryController.newInterfaceNameFromUser}"
+     	 title="${messages.mNewInventoryName}" />
+   	    </h:panelGrid>
+   	    
+   	    <br></br>
+     	<p:separator/>
+     	<br></br>
+     	
+     	
+         <h:panelGrid  columns="2" style="text-align:center; width: 100%"> 
+         
+         <p:commandButton value="${messages.lblCancel}"
+			title="${messages.lblCancel}" style="text-align:center; display:block; width: 75%" 
+			action="#{inventoryController.loadPage()}" ajax="false" >
+		
+		</p:commandButton>
+		
+		<p:commandButton value="${messages.mRenameInvent}"
+			title="${messages.mRenameInvent}" style="text-align:center; display:block; width: 100%" 
+			action="#{inventoryController.renameSelectedInterface()}" ajax="true" update=":dataTable" >
+		</p:commandButton>
+		</h:panelGrid> 
+         
+     
+         
+        
+       </h:form>
+
+</p:dialog>
+
+           
+<!-- Dialog box for location here -->
+<p:dialog id="updateLocationDialog" header="${messages.mRenameInvent}" widgetVar="updateLocationDialog" width="800"
+ height="220" modal="true" resizable="false">
+  		<h:form id="updateInventoryLocationForm">
+  		
+  		<h:panelGrid  columns="3" style="width: 100%">
+  		<h:outputText style="font-weight:bold" value="${messages.mCurrentInventoryLocation}" />
+  		<h:outputText style="font-weight:bold" value=" :  " />	    
+  		<h:outputText style="font-weight:bold" value="${inventoryController.selectedNeInventoryList1.neLocation}" />
+  		 
+  		<h:outputText style="font-weight:bold" value="${messages.mNewInventoryLocation}" />
+     	<h:outputText style="font-weight:bold" value=" :  " />    
+     	
+     	<p:inputText id="newInventLocation" style="font-weight:bold" value="#{inventoryController.newInterfaceLocationFromUser}" 
+     	title="${messages.mNewInventoryLocation}" />
+   	    </h:panelGrid>
+   	    
+   	    <br></br>
+     	<p:separator/>
+     	<br></br>
+     	
+     	
+         <h:panelGrid  columns="2" style="text-align:center; width: 100%"> 
+          <p:commandButton value="${messages.lblCancel}"
+			title="${messages.lblCancel}" style="text-align:center; display:block; width: 75%" 
+			action="#{inventoryController.loadPage()}" ajax="false" >
+		</p:commandButton>
+		
+		<p:commandButton value="${messages.mRenameInvent}"
+			title="${messages.mRenameInvent}" style="text-align:center; display:block; width: 100%" 
+			action="#{inventoryController.updateSelectedInterfaceLocation()}" ajax="true" update=":dataTable" >
+		</p:commandButton>
+		</h:panelGrid>
+         
+     
+         
+          
+       </h:form>
+
+</p:dialog>
+</h:form>
+
+<p:blockUI id="blockUiId" style="color:#242424 !important" block="INVENTORY_LIST" widgetVar="block_page">
+         <div class = "loadingIconPos"> ${messages.mLoading} <br/>
+               <p:graphicImage name="Loading.gif" library="icons"/>
+         </div>
+  </p:blockUI>
+
+</ui:define>
+
+</ui:composition>
